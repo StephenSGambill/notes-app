@@ -11,6 +11,8 @@ import "./App.css"
 export default function App() {
   const [notes, setNotes] = React.useState(() =>
     JSON.parse(localStorage.getItem("notes")) || "")
+  // NB: the above addition of () => ensures that this runs only at the beginning when the app loads, not every time the page re-renders
+  //This is called lazy State Initialization
   const [currentNoteId, setCurrentNoteId] = React.useState(
     (notes[0] && notes[0].id) || ""
   )
