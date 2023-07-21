@@ -33,6 +33,12 @@ export default function App() {
   }
 
   function updateNote(text) {
+    //next 4 line implements functionality of putting edited note at top of sidebar listing by finding the current note, making an array without it, then unshifting to put it on the front of the array, then setting notes to that new array
+    const currentNote = findCurrentNote()
+    const newNoteArray = notes.filter(note => note.id !== currentNote.id)
+    newNoteArray.unshift(currentNote)
+    setNotes(newNoteArray)
+
     setNotes(oldNotes => oldNotes.map(oldNote => {
       return oldNote.id === currentNoteId
         ? { ...oldNote, body: text }
@@ -45,6 +51,12 @@ export default function App() {
       return note.id === currentNoteId
     }) || notes[0]
   }
+
+  function deleteNote(event, noteId) {
+    event.stopPropagation()
+    setNotes(oldNotes => oldNotes.filter(note => note.id !== noteId))
+  }
+
 
   return (
     <main>
@@ -61,6 +73,7 @@ export default function App() {
               currentNote={findCurrentNote()}
               setCurrentNoteId={setCurrentNoteId}
               newNote={createNewNote}
+              handleDelete={deleteNote}
             />
             {
               currentNoteId &&
