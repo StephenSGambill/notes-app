@@ -16,6 +16,7 @@ export default function App() {
   const currentNote = notes.find(note => note.id === currentNoteId)
     || notes[0]
   const sortedNotes = notes.sort((a, b) => b.updatedAt - a.updatedAt);
+  const [tempNoteText, setTempNoteText] = useState("")
 
 
   useEffect(() => {
@@ -36,6 +37,24 @@ export default function App() {
       setCurrentNoteId(notes[0]?.id)
     }
   }, [notes])
+
+  useEffect(() => {
+    if (currentNote) {
+      setTempNoteText(currentNote.body)
+    }
+  }, [currentNote])
+
+  //Debouncing is to make sure database isn't updated with every keystroke, thus using up Firestore usage limits
+  //This implements debouncing, so that when changes are made, it only updates firestore database if there is no input for 1/2 second
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (tempNoteText !== currentNote.body) {
+        updateNote(tempNoteText)
+
+      }
+    }, 500)
+    return () => { clearTimeout(timeoutId) }
+  }, [tempNoteText])
 
 
   async function createNewNote() {
@@ -81,8 +100,8 @@ export default function App() {
             />
 
             <Editor
-              currentNote={currentNote}
-              updateNote={updateNote}
+              tempNoteText={tempNoteText}
+              setTempNoteText={setTempNoteText}
             />
 
           </Split>
